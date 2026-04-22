@@ -22,10 +22,8 @@ import java.util.Properties;
  */
 public class Launcher {
 
-    // <editor-fold defaultstate="collapsed" desc="*** variables ***">
     public static final Log LOG = new Log(Launcher.class.getName());
     public static final Properties PROPS = new Properties();
-    // </editor-fold>
 
     /**
      * Application entry point.
@@ -42,14 +40,6 @@ public class Launcher {
         Runtime.getRuntime().addShutdownHook(new Thread(() -> {
             for (var handler : LOG.getHandlers()) handler.close();
         }));
-        // Properties.
-        String propertiesPath = "data" + File.separator + "config.properties";
-        try (FileInputStream fis = new FileInputStream(propertiesPath)) {
-            PROPS.load(fis);
-        } catch (IOException e) {
-            LOG.severe(LogMessage.fileLoadError(propertiesPath));
-            System.exit(1);
-        }
         // you can run one of the available examples
         PApplet.main(FlowFieldSketch.class);
     }

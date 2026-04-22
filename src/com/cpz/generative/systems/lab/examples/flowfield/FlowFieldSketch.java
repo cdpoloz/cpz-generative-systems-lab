@@ -1,93 +1,128 @@
 package com.cpz.generative.systems.lab.examples.flowfield;
 
-import com.cpz.generative.systems.lab.config.Config;
+import com.cpz.generative.systems.lab.config.ConfigFlowFieldSketch;
+import com.cpz.generative.systems.lab.generative.flowfield.Particle;
+import com.cpz.generative.systems.lab.generative.flowfield.ParticleStyle;
 import com.cpz.utils.color.Colors;
 import processing.core.PApplet;
-import processing.core.PVector;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Properties;
+
+import static com.cpz.generative.systems.lab.main.Launcher.LOG;
 
 /**
  * @author CPZ
  */
 public class FlowFieldSketch extends PApplet {
 
-    private final PVector prevPos, pos, vel;
-    //private float prevX, prevY, x, y, vx, vy;
-    private float noiseScale, time, timeStep, maxSpeed;
-    private int c1, c2;
+    public static final Properties FLOW_FIELD_SKETCH_PROPS = new Properties();
+
+    private final List<Particle> particles;
+    private final List<ParticleStyle> particleStyles;
+    private int particlesAmount;
+    private float fAngle;
 
     public FlowFieldSketch() {
-        prevPos = new PVector();
-        pos = new PVector();
-        vel = new PVector();
+        LOG.info("Starting sketch constructor: " + this.getClass().getSimpleName());
+        particles = new ArrayList<>();
+        particleStyles = new ArrayList<>();
+        LOG.info("Finishing sketch constructor: " + this.getClass().getSimpleName());
     }
 
     public void settings() {
-        Config.settings(this);
+        ConfigFlowFieldSketch.settings(this);
     }
 
     public void setup() {
-        Config.setup(this, "| FlowFieldSketch");
-        // noise parameters
-        noiseScale = 0.001f;
-        time = 0.0f;
-        timeStep = 0.01f;
-        // initial position values
-        float x = random(width);
-        float y = random(height);
-        pos.set(x, y);
-        prevPos.set(x, y);
-        //prevX = x;
-        //prevY = y;
-        // speed parameters
-        maxSpeed = 2.0f;
-        // color parameters
-        c1 = Colors.argb(255, 255,255,0);
-        c2 = Colors.argb(255, 255,0,255);
+        ConfigFlowFieldSketch.setup(this);
+        LOG.info("Starting final setup");
+        // particles
+        particlesAmount = 4000;
+        for (int i = 0; i < particlesAmount; i++) {
+            // particle
+            Particle particle = new Particle(random(width), random(height));
+            particle.setNoiseScale(0.001f);
+            particle.setTime(0f);
+            particle.setTimeStep(0.02f);
+            particle.setMaxSpeed(2.5f);
+            particles.add(particle);
+            // particle style
+            ParticleStyle particleStyle = new ParticleStyle();
+            particleStyle.setC1(Colors.argb(255, 255, 255, 0));
+            particleStyle.setC2(Colors.argb(255, 255, 0, 255));
+            particleStyle.setAlpha(255);
+            particleStyle.setStrokeWeight(0.5f);
+            particleStyles.add(particleStyle);
+        }
+        fAngle = 4.0f;
         // initial background
         background(0);
+        fill(0, 12);
+        noStroke();
+        LOG.info("Finishing final setup");
     }
 
     @Override
     public void draw() {
-        // update
-        // saving previous position
-        prevPos.set(pos.x, pos.y);
-        //prevX = x;
-        //prevY = y;
-        // updating acceleration value
-        float angle = noise(pos.x * noiseScale, pos.y * noiseScale, time) * TWO_PI * 4.0f;
-        float ax = cos(angle) * 0.1f;
-        float ay = sin(angle) * 0.1f;
-        // updating velocity value
-        float vx = vel.x;
-        float vy = vel.y;
-        vx += ax;
-        vy += ay;
-        float speed = sqrt(vx * vx + vy * vy);
-        if (speed > maxSpeed) {
-            vx = (vx / speed) * maxSpeed;
-            vy = (vy / speed) * maxSpeed;
+        // background
+        rect(0, 0, width, height);
+        // particles
+        update(particles, particleStyles);
+        draw(particles, particleStyles);
+    }
+
+    private void update(List<Particle> particles, List<ParticleStyle> particleStyles) {
+        for (int i = 0; i < particles.size(); i++) {
+            Particle particle = particles.get(i);
+            updateParticle(particle);
+            float fColor = particle.getX() / width;
+            //float fAlpha = map(i, 0, particles.size(), 0, 1);
+            float fAlpha = 0;
+            float y = particle.getY();
+            if (y < height * 0.5f) fAlpha = map(y, 0, height * 0.5f, 0, 1);
+            else fAlpha = map(y, height * 0.5f, height, 1, 0);
+
+            ParticleStyle particleStyle = particleStyles.get(i);
+            updateParticleStyle(particleStyle, fColor, fAlpha);
         }
-        vel.set(vx, vy);
-        // updating position
-        float x = pos.x;
-        float y = pos.y;
-        x += vx;
-        y += vy;
-        // checking if position is inside the frame
-        boolean particleInsideFrame = (x > 0 && x < width) && (y > 0 && y < height);
-        if (x < 0) x = width - 1;
-        else if (x >= width) x = 0;
-        if (y < 0) y = height - 1;
-        else if (y >= height) y = 0;
-        pos.set(x, y);
-        // updating time/step
-        time += timeStep;
-        // updating color depending on x position
-        int c = Colors.lerpColor(c1, c2, x/width);
-        // draw
-        stroke(red(c), green(c), blue(c), 80);
-        if (particleInsideFrame) line(prevPos.x, prevPos.y, pos.x, pos.y);
+    }
+
+    private void updateParticle(Particle particle) {
+        // updating particle position
+        float x = particle.getX();
+        float y = particle.getY();
+        float noiseScale = particle.getNoiseScale();
+        float time = particle.getTime();
+        float angle = noise(x * noiseScale, y * noiseScale, time) * TWO_PI * fAngle;
+        float ax = (float) (Math.cos(angle) * 0.1f);
+        float ay = (float) (Math.sin(angle) * 0.1f);
+        particle.update(width, height, ax, ay);
+    }
+
+    private void updateParticleStyle(ParticleStyle particleStyle, float fColor, float fAlpha) {
+        // updating particle style
+        particleStyle.update(fColor, fAlpha);
+    }
+
+    private void draw(List<Particle> particles, List<ParticleStyle> particleStyles) {
+        for (int i = 0; i < particles.size(); i++) {
+            drawParticle(particles.get(i), particleStyles.get(i));
+        }
+    }
+
+    private void drawParticle(Particle particle, ParticleStyle particleStyle) {
+        // drawing particle on screen
+        float previousX = particle.getPreviousX();
+        float previousY = particle.getPreviousY();
+        float x = particle.getX();
+        float y = particle.getY();
+        pushStyle();
+        strokeWeight(particleStyle.getStrokeWeight());
+        stroke(particleStyle.getC());
+        if (!particle.isWrapped()) line(previousX, previousY, x, y);
+        popStyle();
     }
 
 }

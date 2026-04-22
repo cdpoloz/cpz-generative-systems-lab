@@ -8,7 +8,7 @@ import com.cpz.processing.controls.controls.label.style.HorizontalAlign;
 import com.cpz.processing.controls.controls.label.style.VerticalAlign;
 import com.cpz.processing.controls.core.input.InputManager;
 import com.cpz.processing.controls.core.input.PointerEvent;
-import com.cpz.generative.systems.lab.config.Config;
+import com.cpz.generative.systems.lab.config.ConfigFlowFieldSketch;
 import com.cpz.generative.systems.lab.input.MainInputLayer;
 import com.cpz.utils.color.Colors;
 import processing.core.PApplet;
@@ -30,11 +30,11 @@ public class Sketch extends PApplet {
     private int clickCount;
 
     public void settings() {
-        Config.settings(this);
+        ConfigFlowFieldSketch.settings(this);
     }
 
     public void setup() {
-        Config.setup(this, "");
+        ConfigFlowFieldSketch.setup(this);
         LOG.info("Starting final setup");
         // button
         float x = 300f;
@@ -63,7 +63,6 @@ public class Sketch extends PApplet {
         inputManager = new InputManager();
         MainInputLayer mainInputLayer = new MainInputLayer(0).addPointerTarget(button::handlePointerEvent);
         inputManager.registerLayer(mainInputLayer);
-
         LOG.info("Finished final setup");
     }
 
