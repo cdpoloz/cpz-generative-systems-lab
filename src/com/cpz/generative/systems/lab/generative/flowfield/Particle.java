@@ -6,8 +6,8 @@ package com.cpz.generative.systems.lab.generative.flowfield;
 public final class Particle {
 
     private float previousX, previousY, x, y, velX, velY;
-    private float noiseScale, time, timeStep, maxSpeed;
-    private boolean wrapped;
+    private float noiseScale, time, timeStep, maxSpeed, discontinuityThreshold;
+    private boolean skipDraw;
 
     public Particle(float x, float y) {
         this.x = x;
@@ -18,7 +18,7 @@ public final class Particle {
         velY = 0;
     }
 
-    public void update(float width, float height, float ax, float ay) {
+    public void updatePositionByAcceleration(float width, float height, float ax, float ay) {
         // saving previous position
         previousX = x;
         previousY = y;
@@ -33,28 +33,34 @@ public final class Particle {
         // updating position
         x += velX;
         y += velY;
-        // checking if position is inside the frame
-        wrapped = false;
-        if (x < 0) {
-            x = width - 1;
-            wrapped = true;
-        } else if (x >= width) {
-            x = 0;
-            wrapped = true;
-        }
-        if (y < 0) {
-            y = height - 1;
-            wrapped = true;
-        } else if (y >= height) {
-            y = 0;
-            wrapped = true;
-        }
+        if (x < 0) x = width - 1;
+        else if (x >= width) x = 0;
+        if (y < 0) y = height - 1;
+        else if (y >= height) y = 0;
         // updating time/step
         time += timeStep;
     }
 
-    public boolean isWrapped() {
-        return wrapped;
+    public void followPosition(float targetX, float targetY) {
+        // saving previous position
+        previousX = x;
+        previousY = y;
+        // updating position
+        x = targetX;
+        y = targetY;
+        // updating time/step
+        time += timeStep;
+    }
+
+    public void updateSkipDraw() {
+        float dx = x - previousX;
+        float dy = y - previousY;
+        float distance = (float) Math.sqrt(dx * dx + dy * dy);
+        skipDraw = distance > discontinuityThreshold;
+    }
+
+    public boolean isSkipDraw() {
+        return skipDraw;
     }
 
     public float getPreviousX() {
@@ -87,6 +93,7 @@ public final class Particle {
 
     public void setMaxSpeed(float maxSpeed) {
         this.maxSpeed = maxSpeed;
+        this.discontinuityThreshold = maxSpeed * 2;
     }
 
     public float getNoiseScale() {

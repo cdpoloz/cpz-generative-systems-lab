@@ -1,12 +1,13 @@
 package com.cpz.generative.systems.lab.examples.flowfield;
 
 import com.cpz.generative.systems.lab.config.ConfigFlowFieldSketch;
-import com.cpz.generative.systems.lab.generative.flowfield.Particle;
-import com.cpz.generative.systems.lab.generative.flowfield.ParticleStyle;
+import com.cpz.generative.systems.lab.generative.flowfield.FlowField;
+import com.cpz.generative.systems.lab.generative.flowfield.ParticleTrail;
+import com.cpz.generative.systems.lab.generative.flowfield.ParticleTrailElement;
+import com.cpz.generative.systems.lab.generative.flowfield.ParticleTrailElementFactory;
 import com.cpz.utils.color.Colors;
 import processing.core.PApplet;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Properties;
 
@@ -18,16 +19,12 @@ import static com.cpz.generative.systems.lab.main.Launcher.LOG;
 public class FlowFieldSketch extends PApplet {
 
     public static final Properties FLOW_FIELD_SKETCH_PROPS = new Properties();
-
-    private final List<Particle> particles;
-    private final List<ParticleStyle> particleStyles;
-    private int particlesAmount;
-    private float fAngle;
+    private ParticleTrail particleTrail;
+    private FlowField flowField;
+    private float alphaMax, strokeWeightMax;
 
     public FlowFieldSketch() {
         LOG.info("Starting sketch constructor: " + this.getClass().getSimpleName());
-        particles = new ArrayList<>();
-        particleStyles = new ArrayList<>();
         LOG.info("Finishing sketch constructor: " + this.getClass().getSimpleName());
     }
 
@@ -38,90 +35,89 @@ public class FlowFieldSketch extends PApplet {
     public void setup() {
         ConfigFlowFieldSketch.setup(this);
         LOG.info("Starting final setup");
+        // flow field
+        flowField = new FlowField(this, 4.0f, 0.1f);
+        // particle trails
+        particleTrail = new ParticleTrail();
+        // particle trail elements' values
+        int particlesAmount = 200;
+        alphaMax = 128;
+        strokeWeightMax = 2.5f;
+        float noiseScale = 0.001f;
+        float time = 0.0f;
+        float timeStep = 0.02f;
+        float maxSpeed = 2.5f;
+        int color1 = Colors.argb(255, 255, 204, 0);
+        int color2 = Colors.argb(255, 255, 0, 102);
         // particles
-        particlesAmount = 4000;
-        for (int i = 0; i < particlesAmount; i++) {
-            // particle
-            Particle particle = new Particle(random(width), random(height));
-            particle.setNoiseScale(0.001f);
-            particle.setTime(0f);
-            particle.setTimeStep(0.02f);
-            particle.setMaxSpeed(2.5f);
-            particles.add(particle);
-            // particle style
-            ParticleStyle particleStyle = new ParticleStyle();
-            particleStyle.setC1(Colors.argb(255, 255, 255, 0));
-            particleStyle.setC2(Colors.argb(255, 255, 0, 255));
-            particleStyle.setAlpha(255);
-            particleStyle.setStrokeWeight(0.5f);
-            particleStyles.add(particleStyle);
+        ParticleTrailElement leadingElement = ParticleTrailElementFactory.createParticleTrailElement(
+                random(width),
+                random(height),
+                noiseScale,
+                time,
+                timeStep,
+                maxSpeed,
+                Colors.argb((int) alphaMax, Colors.red(color1), Colors.green(color1), Colors.blue(color1)),
+                Colors.argb((int) alphaMax, Colors.red(color2), Colors.green(color2), Colors.blue(color2)),
+                strokeWeightMax
+        );
+        particleTrail.addElement(leadingElement);
+        for (int i = 0; i < particlesAmount - 1; i++) {
+            float strokeWeight = map(i, 0, particlesAmount - 1, strokeWeightMax, 0);
+            float alpha = map(i, 0, particlesAmount - 1, alphaMax, 0);
+            ParticleTrailElement followingElement = ParticleTrailElementFactory.createParticleTrailElement(
+                    leadingElement.particle().getPreviousX(),
+                    leadingElement.particle().getPreviousY(),
+                    noiseScale,
+                    time,
+                    timeStep,
+                    maxSpeed,
+                    Colors.argb((int) alpha, Colors.red(color1), Colors.green(color1), Colors.blue(color1)),
+                    Colors.argb((int) alpha, Colors.red(color2), Colors.green(color2), Colors.blue(color2)),
+                    strokeWeight
+            );
+            particleTrail.addElement(followingElement);
         }
-        fAngle = 4.0f;
-        // initial background
-        background(0);
-        fill(0, 12);
-        noStroke();
         LOG.info("Finishing final setup");
     }
 
     @Override
     public void draw() {
-        // background
-        rect(0, 0, width, height);
+        background(0);
         // particles
-        update(particles, particleStyles);
-        draw(particles, particleStyles);
+        updateTrail(flowField, particleTrail);
+        drawParticleTrail(particleTrail);
     }
 
-    private void update(List<Particle> particles, List<ParticleStyle> particleStyles) {
-        for (int i = 0; i < particles.size(); i++) {
-            Particle particle = particles.get(i);
-            updateParticle(particle);
-            float fColor = particle.getX() / width;
-            //float fAlpha = map(i, 0, particles.size(), 0, 1);
-            float fAlpha = 0;
-            float y = particle.getY();
-            if (y < height * 0.5f) fAlpha = map(y, 0, height * 0.5f, 0, 1);
-            else fAlpha = map(y, height * 0.5f, height, 1, 0);
-
-            ParticleStyle particleStyle = particleStyles.get(i);
-            updateParticleStyle(particleStyle, fColor, fAlpha);
-        }
+    private void updateTrail(FlowField flowField, ParticleTrail particleTrail) {
+        // updating the leading particle trail element position
+        ParticleTrailElement leadingElement = particleTrail.getLeadingElement();
+        float x = leadingElement.particle().getX();
+        float y = leadingElement.particle().getY();
+        float noiseScale = leadingElement.particle().getNoiseScale();
+        float time = leadingElement.particle().getTime();
+        float ax = flowField.getForceX(x, y, noiseScale, time);
+        float ay = flowField.getForceY(x, y, noiseScale, time);
+        particleTrail.updateWithLeaderForce(width, height, ax, ay);
     }
 
-    private void updateParticle(Particle particle) {
-        // updating particle position
-        float x = particle.getX();
-        float y = particle.getY();
-        float noiseScale = particle.getNoiseScale();
-        float time = particle.getTime();
-        float angle = noise(x * noiseScale, y * noiseScale, time) * TWO_PI * fAngle;
-        float ax = (float) (Math.cos(angle) * 0.1f);
-        float ay = (float) (Math.sin(angle) * 0.1f);
-        particle.update(width, height, ax, ay);
+    private void drawParticleTrail(ParticleTrail particleTrail) {
+        List<ParticleTrailElement> particleTrailElements = particleTrail.getParticleTrailElements();
+        for (ParticleTrailElement element : particleTrailElements) drawElement(element);
     }
 
-    private void updateParticleStyle(ParticleStyle particleStyle, float fColor, float fAlpha) {
-        // updating particle style
-        particleStyle.update(fColor, fAlpha);
-    }
-
-    private void draw(List<Particle> particles, List<ParticleStyle> particleStyles) {
-        for (int i = 0; i < particles.size(); i++) {
-            drawParticle(particles.get(i), particleStyles.get(i));
-        }
-    }
-
-    private void drawParticle(Particle particle, ParticleStyle particleStyle) {
-        // drawing particle on screen
-        float previousX = particle.getPreviousX();
-        float previousY = particle.getPreviousY();
-        float x = particle.getX();
-        float y = particle.getY();
+    private void drawElement(ParticleTrailElement element) {
+        // checking if the particle must be drawn or not
+        if (element.particle().isSkipDraw()) return;
+        // drawing element on screen
+        float previousX = element.particle().getPreviousX();
+        float previousY = element.particle().getPreviousY();
+        float x = element.particle().getX();
+        float y = element.particle().getY();
         pushStyle();
-        strokeWeight(particleStyle.getStrokeWeight());
-        stroke(particleStyle.getC());
-        if (!particle.isWrapped()) line(previousX, previousY, x, y);
+        strokeWeight(element.style().getStrokeWeight());
+        stroke(element.style().getColor());
+        line(previousX, previousY, x, y);
         popStyle();
     }
 

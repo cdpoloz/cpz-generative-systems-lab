@@ -1,6 +1,5 @@
 package com.cpz.generative.systems.lab.generative.flowfield;
 
-
 import com.cpz.utils.color.Colors;
 
 /**
@@ -8,32 +7,31 @@ import com.cpz.utils.color.Colors;
  */
 public class ParticleStyle {
 
-    private int c1, c2, c;
-    private float strokeWeight, alpha;
+    private int color1, color2, color;
+    private float strokeWeight;
 
     public ParticleStyle() {
         strokeWeight = 1f;
     }
 
-    public void update(float fColor, float fAlpha) {
-        c = Colors.lerpColor(c1, c2, fColor);
-        c = Colors.argb((int) (alpha * fAlpha), Colors.red(c), Colors.green(c), Colors.blue(c));
+    public ParticleStyle(ParticleStyle particleStyle) {
+        this.color1 = particleStyle.color1;
+        this.color2 = particleStyle.color2;
+        this.color = particleStyle.color;
+        this.strokeWeight = particleStyle.strokeWeight;
     }
 
-    public void setAlpha(float alpha) {
-        this.alpha = alpha;
+    public void updateCurrentColor(float fColor) {
+        color = Colors.lerpColor(color1, color2, fColor);
     }
 
-    public void setC1(int c1) {
-        this.c1 = c1;
+    public void setColors(int color1, int color2) {
+        this.color1 = color1;
+        this.color2 = color2;
     }
 
-    public void setC2(int c2) {
-        this.c2 = c2;
-    }
-
-    public int getC() {
-        return c;
+    public int getColor() {
+        return color;
     }
 
     public void setStrokeWeight(float strokeWeight) {
