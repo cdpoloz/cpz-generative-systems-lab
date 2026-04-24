@@ -19,7 +19,7 @@ import static com.cpz.generative.systems.lab.main.Launcher.LOG;
 public class FlowFieldSketch extends PApplet {
 
     public static final Properties FLOW_FIELD_SKETCH_PROPS = new Properties();
-    private ParticleTrail particleTrail;
+    private ParticleTrail pt1, pt2, pt3, pt4, pt5;
     private FlowField flowField;
     private float alphaMax, strokeWeightMax;
 
@@ -38,10 +38,14 @@ public class FlowFieldSketch extends PApplet {
         // flow field
         flowField = new FlowField(this, 4.0f, 0.1f);
         // particle trails
-        particleTrail = new ParticleTrail();
+        pt1 = new ParticleTrail();
+        pt2 = new ParticleTrail();
+        pt3 = new ParticleTrail();
+        pt4 = new ParticleTrail();
+        pt5 = new ParticleTrail();
         // particle trail elements' values
-        int particlesAmount = 200;
-        alphaMax = 128;
+        int particlesAmount = 2000;
+        alphaMax = 64;
         strokeWeightMax = 2.5f;
         float noiseScale = 0.001f;
         float time = 0.0f;
@@ -50,9 +54,11 @@ public class FlowFieldSketch extends PApplet {
         int color1 = Colors.argb(255, 255, 204, 0);
         int color2 = Colors.argb(255, 255, 0, 102);
         // particles
+        float x = random(width);
+        float y = random(height);
         ParticleTrailElement leadingElement = ParticleTrailElementFactory.createParticleTrailElement(
-                random(width),
-                random(height),
+                x,
+                y,
                 noiseScale,
                 time,
                 timeStep,
@@ -61,7 +67,60 @@ public class FlowFieldSketch extends PApplet {
                 Colors.argb((int) alphaMax, Colors.red(color2), Colors.green(color2), Colors.blue(color2)),
                 strokeWeightMax
         );
-        particleTrail.addElement(leadingElement);
+        pt1.addElement(leadingElement);
+
+        leadingElement = ParticleTrailElementFactory.createParticleTrailElement(
+                x + random(-4,4),
+                y + random(-4,4),
+                noiseScale,
+                time,
+                timeStep,
+                maxSpeed,
+                Colors.argb((int) alphaMax, Colors.red(color1), Colors.green(color1), Colors.blue(color1)),
+                Colors.argb((int) alphaMax, Colors.red(color2), Colors.green(color2), Colors.blue(color2)),
+                strokeWeightMax
+        );
+        pt2.addElement(leadingElement);
+
+        leadingElement = ParticleTrailElementFactory.createParticleTrailElement(
+                x + random(-4,4),
+                y + random(-4,4),
+                noiseScale,
+                time,
+                timeStep,
+                maxSpeed,
+                Colors.argb((int) alphaMax, Colors.red(color1), Colors.green(color1), Colors.blue(color1)),
+                Colors.argb((int) alphaMax, Colors.red(color2), Colors.green(color2), Colors.blue(color2)),
+                strokeWeightMax
+        );
+        pt3.addElement(leadingElement);
+
+        leadingElement = ParticleTrailElementFactory.createParticleTrailElement(
+                x + random(-4,4),
+                y + random(-4,4),
+                noiseScale,
+                time,
+                timeStep,
+                maxSpeed,
+                Colors.argb((int) alphaMax, Colors.red(color1), Colors.green(color1), Colors.blue(color1)),
+                Colors.argb((int) alphaMax, Colors.red(color2), Colors.green(color2), Colors.blue(color2)),
+                strokeWeightMax
+        );
+        pt4.addElement(leadingElement);
+
+        leadingElement = ParticleTrailElementFactory.createParticleTrailElement(
+                x + random(-4,4),
+                y + random(-4,4),
+                noiseScale,
+                time,
+                timeStep,
+                maxSpeed,
+                Colors.argb((int) alphaMax, Colors.red(color1), Colors.green(color1), Colors.blue(color1)),
+                Colors.argb((int) alphaMax, Colors.red(color2), Colors.green(color2), Colors.blue(color2)),
+                strokeWeightMax
+        );
+        pt5.addElement(leadingElement);
+
         for (int i = 0; i < particlesAmount - 1; i++) {
             float strokeWeight = map(i, 0, particlesAmount - 1, strokeWeightMax, 0);
             float alpha = map(i, 0, particlesAmount - 1, alphaMax, 0);
@@ -76,7 +135,59 @@ public class FlowFieldSketch extends PApplet {
                     Colors.argb((int) alpha, Colors.red(color2), Colors.green(color2), Colors.blue(color2)),
                     strokeWeight
             );
-            particleTrail.addElement(followingElement);
+            pt1.addElement(followingElement);
+
+            followingElement = ParticleTrailElementFactory.createParticleTrailElement(
+                    leadingElement.particle().getPreviousX(),
+                    leadingElement.particle().getPreviousY(),
+                    noiseScale,
+                    time,
+                    timeStep,
+                    maxSpeed,
+                    Colors.argb((int) alpha, Colors.red(color1), Colors.green(color1), Colors.blue(color1)),
+                    Colors.argb((int) alpha, Colors.red(color2), Colors.green(color2), Colors.blue(color2)),
+                    strokeWeight
+            );
+            pt2.addElement(followingElement);
+
+            followingElement = ParticleTrailElementFactory.createParticleTrailElement(
+                    leadingElement.particle().getPreviousX(),
+                    leadingElement.particle().getPreviousY(),
+                    noiseScale,
+                    time,
+                    timeStep,
+                    maxSpeed,
+                    Colors.argb((int) alpha, Colors.red(color1), Colors.green(color1), Colors.blue(color1)),
+                    Colors.argb((int) alpha, Colors.red(color2), Colors.green(color2), Colors.blue(color2)),
+                    strokeWeight
+            );
+            pt3.addElement(followingElement);
+
+            followingElement = ParticleTrailElementFactory.createParticleTrailElement(
+                    leadingElement.particle().getPreviousX(),
+                    leadingElement.particle().getPreviousY(),
+                    noiseScale,
+                    time,
+                    timeStep,
+                    maxSpeed,
+                    Colors.argb((int) alpha, Colors.red(color1), Colors.green(color1), Colors.blue(color1)),
+                    Colors.argb((int) alpha, Colors.red(color2), Colors.green(color2), Colors.blue(color2)),
+                    strokeWeight
+            );
+            pt4.addElement(followingElement);
+
+            followingElement = ParticleTrailElementFactory.createParticleTrailElement(
+                    leadingElement.particle().getPreviousX(),
+                    leadingElement.particle().getPreviousY(),
+                    noiseScale,
+                    time,
+                    timeStep,
+                    maxSpeed,
+                    Colors.argb((int) alpha, Colors.red(color1), Colors.green(color1), Colors.blue(color1)),
+                    Colors.argb((int) alpha, Colors.red(color2), Colors.green(color2), Colors.blue(color2)),
+                    strokeWeight
+            );
+            pt5.addElement(followingElement);
         }
         LOG.info("Finishing final setup");
     }
@@ -85,8 +196,16 @@ public class FlowFieldSketch extends PApplet {
     public void draw() {
         background(0);
         // particles
-        updateTrail(flowField, particleTrail);
-        drawParticleTrail(particleTrail);
+        updateTrail(flowField, pt1);
+        updateTrail(flowField, pt2);
+        updateTrail(flowField, pt3);
+        updateTrail(flowField, pt4);
+        updateTrail(flowField, pt5);
+        drawParticleTrail(pt1);
+        drawParticleTrail(pt2);
+        drawParticleTrail(pt3);
+        drawParticleTrail(pt4);
+        drawParticleTrail(pt5);
     }
 
     private void updateTrail(FlowField flowField, ParticleTrail particleTrail) {
@@ -119,6 +238,11 @@ public class FlowFieldSketch extends PApplet {
         stroke(element.style().getColor());
         line(previousX, previousY, x, y);
         popStyle();
+    }
+
+    @Override
+    public void keyReleased() {
+        if (key == 'r') setup();
     }
 
 }
