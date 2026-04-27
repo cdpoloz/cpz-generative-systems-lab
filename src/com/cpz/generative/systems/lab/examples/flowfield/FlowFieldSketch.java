@@ -1,10 +1,7 @@
 package com.cpz.generative.systems.lab.examples.flowfield;
 
 import com.cpz.generative.systems.lab.config.ConfigFlowFieldSketch;
-import com.cpz.generative.systems.lab.generative.flowfield.FlowField;
-import com.cpz.generative.systems.lab.generative.flowfield.ParticleTrail;
-import com.cpz.generative.systems.lab.generative.flowfield.ParticleTrailElement;
-import com.cpz.generative.systems.lab.generative.flowfield.ParticleTrailElementFactory;
+import com.cpz.generative.systems.lab.generative.flowfield.*;
 import com.cpz.utils.color.Colors;
 import processing.core.PApplet;
 
@@ -21,13 +18,15 @@ public class FlowFieldSketch extends PApplet {
 
     public static final Properties FLOW_FIELD_SKETCH_PROPS = new Properties();
 
+    private final FlowFieldTrailConfig flowFieldTrailConfig;
     private final List<ParticleTrail> particleTrails;
+    private int trailsAmount;
 
     private FlowField flowField;
-    private float alphaMax, strokeWeightMax;
 
     public FlowFieldSketch() {
         LOG.info("Starting sketch constructor: " + this.getClass().getSimpleName());
+        flowFieldTrailConfig = new FlowFieldTrailConfig();
         particleTrails = new ArrayList<>();
         LOG.info("Finishing sketch constructor: " + this.getClass().getSimpleName());
     }
@@ -42,51 +41,16 @@ public class FlowFieldSketch extends PApplet {
         // flow field
         flowField = new FlowField(this, 4.0f, 0.1f);
         // particle trails
-        // particle trail elements' values
-        int trailsAmount = 5000;
-
-        int particlesAmount = 10;
-        alphaMax = 255;
-        strokeWeightMax = 0.5f;
-        float noiseScale = 0.001f;
-        float time = 0.0f;
-        float timeStep = 0.02f;
-        float maxSpeed = 2.5f;
-        int color1 = Colors.argb(255, 255, 204, 0);
-        int color2 = Colors.argb(255, 255, 0, 102);
-        for (int i = 0; i < trailsAmount; i++) {
-            ParticleTrail pt = new ParticleTrail();
-            // particles
-            ParticleTrailElement leadingElement = ParticleTrailElementFactory.createParticleTrailElement(
-                    random(width),
-                    random(height),
-                    noiseScale,
-                    time,
-                    timeStep,
-                    maxSpeed,
-                    Colors.argb((int) alphaMax, Colors.red(color1), Colors.green(color1), Colors.blue(color1)),
-                    Colors.argb((int) alphaMax, Colors.red(color2), Colors.green(color2), Colors.blue(color2)),
-                    strokeWeightMax
-            );
-            pt.addElement(leadingElement);
-            for (int j = 0; j < particlesAmount - 1; j++) {
-                float strokeWeight = map(j, 0, particlesAmount - 1, strokeWeightMax, 0);
-                float alpha = map(j, 0, particlesAmount - 1, alphaMax, 0);
-                ParticleTrailElement followingElement = ParticleTrailElementFactory.createParticleTrailElement(
-                        leadingElement.particle().getPreviousX(),
-                        leadingElement.particle().getPreviousY(),
-                        noiseScale,
-                        time,
-                        timeStep,
-                        maxSpeed,
-                        Colors.argb((int) alpha, Colors.red(color1), Colors.green(color1), Colors.blue(color1)),
-                        Colors.argb((int) alpha, Colors.red(color2), Colors.green(color2), Colors.blue(color2)),
-                        strokeWeight
-                );
-                pt.addElement(followingElement);
-            }
-            particleTrails.add(pt);
-        }
+        flowFieldTrailConfig.setAlphaMax(255f);
+        flowFieldTrailConfig.setStrokeWeightMax(0.5f);
+        flowFieldTrailConfig.setNoiseScale(0.001f);
+        flowFieldTrailConfig.setTime(0.0f);
+        flowFieldTrailConfig.setTimeStep(0.02f);
+        flowFieldTrailConfig.setMaxSpeed(2.5f);
+        flowFieldTrailConfig.setColor1(Colors.argb(255, 255, 204, 0));
+        flowFieldTrailConfig.setColor2(Colors.argb(255, 255, 0, 102));
+        trailsAmount = 5000;
+        initializeTrails(flowFieldTrailConfig, trailsAmount);
         LOG.info("Finishing final setup");
     }
 
@@ -96,6 +60,16 @@ public class FlowFieldSketch extends PApplet {
         // particles
         particleTrails.forEach(pt -> updateTrail(flowField, pt));
         particleTrails.forEach(this::drawParticleTrail);
+    }
+
+    private void initializeTrails(FlowFieldTrailConfig flowFieldTrailConfig, int trailsAmount) {
+        particleTrails.clear();
+        for (int i = 0; i < trailsAmount; i++) {
+            float x = random(width);
+            float y = random(height);
+            ParticleTrail pt = ParticleTrailFactory.createParticleTrail(x, y, flowFieldTrailConfig);
+            particleTrails.add(pt);
+        }
     }
 
     private void updateTrail(FlowField flowField, ParticleTrail particleTrail) {
@@ -111,8 +85,10 @@ public class FlowFieldSketch extends PApplet {
     }
 
     private void drawParticleTrail(ParticleTrail particleTrail) {
+        pushStyle();
         List<ParticleTrailElement> particleTrailElements = particleTrail.getParticleTrailElements();
         for (ParticleTrailElement element : particleTrailElements) drawElement(element);
+        popStyle();
     }
 
     private void drawElement(ParticleTrailElement element) {
@@ -123,19 +99,14 @@ public class FlowFieldSketch extends PApplet {
         float previousY = element.particle().getPreviousY();
         float x = element.particle().getX();
         float y = element.particle().getY();
-        pushStyle();
         strokeWeight(element.style().getStrokeWeight());
         stroke(element.style().getColor());
         line(previousX, previousY, x, y);
-        popStyle();
     }
 
     @Override
     public void keyReleased() {
-        if (key == 'r') {
-            particleTrails.clear();
-            setup();
-        }
+        if (key == 'r') initializeTrails(flowFieldTrailConfig, trailsAmount);
     }
 
 }
