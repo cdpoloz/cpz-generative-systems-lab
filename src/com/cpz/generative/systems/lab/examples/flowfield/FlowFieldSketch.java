@@ -1,6 +1,7 @@
 package com.cpz.generative.systems.lab.examples.flowfield;
 
 import com.cpz.generative.systems.lab.config.ConfigFlowFieldSketch;
+import com.cpz.generative.systems.lab.main.BaseSketch;
 import com.cpz.generative.systems.lab.generative.flowfield.FlowField;
 import com.cpz.generative.systems.lab.generative.flowfield.FlowFieldConfig;
 import com.cpz.generative.systems.lab.generative.flowfield.FlowFieldTrailConfig;
@@ -8,7 +9,6 @@ import com.cpz.generative.systems.lab.generative.flowfield.ParticleTrail;
 import com.cpz.generative.systems.lab.generative.flowfield.ParticleTrailElement;
 import com.cpz.generative.systems.lab.generative.flowfield.ParticleTrailFactory;
 import com.cpz.utils.color.Colors;
-import processing.core.PApplet;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -19,7 +19,7 @@ import static com.cpz.generative.systems.lab.main.Launcher.LOG;
 /**
  * @author CPZ
  */
-public class FlowFieldSketch extends PApplet {
+public class FlowFieldSketch extends BaseSketch {
 
     public static final Properties FLOW_FIELD_SKETCH_PROPS = new Properties();
 
@@ -27,11 +27,10 @@ public class FlowFieldSketch extends PApplet {
     private final List<ParticleTrail> particleTrails;
     private final FlowFieldConfig flowFieldConfig;
     private FlowField flowField;
-    private int counter;
 
-    public FlowFieldSketch() {
+    public FlowFieldSketch(FlowFieldConfig flowFieldConfig) {
         LOG.info("Starting sketch constructor: " + this.getClass().getSimpleName());
-        flowFieldConfig = new FlowFieldConfig();
+        this.flowFieldConfig = flowFieldConfig;
         flowFieldTrailConfig = new FlowFieldTrailConfig();
         particleTrails = new ArrayList<>();
         LOG.info("Finishing sketch constructor: " + this.getClass().getSimpleName());
@@ -46,7 +45,6 @@ public class FlowFieldSketch extends PApplet {
         LOG.info("Starting final setup");
         // flow field
         flowFieldConfig.setAngleFactor(4.0f);
-        flowFieldConfig.setForceMagnitude(0.01f);
         flowField = new FlowField(this::noise, flowFieldConfig);
         // particle trails
         flowFieldTrailConfig.setTrailsAmount(500);
@@ -60,7 +58,6 @@ public class FlowFieldSketch extends PApplet {
         flowFieldTrailConfig.setColor1(Colors.argb(255, 255, 204, 0));
         flowFieldTrailConfig.setColor2(Colors.argb(255, 255, 0, 102));
         initializeTrails(flowFieldTrailConfig);
-        setupPointer();
         LOG.info("Finishing final setup");
     }
 
@@ -74,7 +71,6 @@ public class FlowFieldSketch extends PApplet {
         strokeWeight(particleTrails.getFirst().getLeadingElement().style().getStrokeWeight());
         particleTrails.forEach(this::drawParticleTrail);
         popStyle();
-        drawPointer();
     }
 
     private void initializeTrails(FlowFieldTrailConfig flowFieldTrailConfig) {
@@ -85,12 +81,6 @@ public class FlowFieldSketch extends PApplet {
             ParticleTrail pt = ParticleTrailFactory.createParticleTrail(x, y, flowFieldTrailConfig);
             particleTrails.add(pt);
         }
-    }
-
-    private void setupPointer() {
-        noCursor();
-        noStroke();
-        fill(255);
     }
 
     private void updateTrail(FlowField flowField, ParticleTrail particleTrail) {
@@ -121,16 +111,9 @@ public class FlowFieldSketch extends PApplet {
         line(previousX, previousY, x, y);
     }
 
-    private void drawPointer() {
-        if (mousePressed) cursor();
-        else {
-            noCursor();
-            ellipse(mouseX, mouseY, 2.5f, 2.5f);
-        }
-    }
-
     @Override
-    public void keyReleased() {
+    public void keyPressed() {
+        disableEscapeKey();
         if (key == 'r') initializeTrails(flowFieldTrailConfig);
     }
 

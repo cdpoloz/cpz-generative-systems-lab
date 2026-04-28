@@ -19,10 +19,13 @@ import static processing.core.PConstants.P2D;
  */
 public class ConfigFlowFieldSketch {
 
-    public static void settings(PApplet sk) {
+    public static void settings(PApplet sketch) {
         LOG.info("Starting settings");
         // properties
-        String propertiesPath = "data" + File.separator + "config_flow-field-sketch.properties";
+        String propertiesPath = "data" + File.separator
+                + "config" + File.separator
+                + "flow-field" + File.separator
+                + "config_flow-field-sketch.properties";
         try (FileInputStream fis = new FileInputStream(propertiesPath)) {
             FLOW_FIELD_SKETCH_PROPS.load(fis);
         } catch (IOException e) {
@@ -38,9 +41,9 @@ public class ConfigFlowFieldSketch {
         // screen scale
         float screenScaleFactor = Float.parseFloat(FLOW_FIELD_SKETCH_PROPS.getProperty("screen.scale.factor"));
         // window size
-        sk.size((int) (screenWidth * screenScaleFactor), (int) (screenHeight * screenScaleFactor), P2D);
+        sketch.size((int) (screenWidth * screenScaleFactor), (int) (screenHeight * screenScaleFactor), P2D);
         // antialiasing
-        sk.smooth(Integer.parseInt(FLOW_FIELD_SKETCH_PROPS.getProperty("sketch.smoothing")));
+        sketch.smooth(Integer.parseInt(FLOW_FIELD_SKETCH_PROPS.getProperty("sketch.smoothing")));
         LOG.info("Finished settings");
     }
 
@@ -50,6 +53,8 @@ public class ConfigFlowFieldSketch {
         sketch.frameRate(Integer.parseInt(FLOW_FIELD_SKETCH_PROPS.getProperty("sketch.fps")));
         // window title
         sketch.getSurface().setTitle(FLOW_FIELD_SKETCH_PROPS.getProperty("window.title"));
+        // position
+        sketch.getSurface().setLocation(0, 0);
         LOG.info("Finished initial setup");
     }
 

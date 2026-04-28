@@ -5,8 +5,8 @@ package com.cpz.generative.systems.lab.generative.flowfield;
  */
 public class FlowFieldConfig {
 
-    private float angleFactor = 4.0f;
-    private float forceMagnitude = 0.1f;
+    private volatile float angleFactor = 4.0f;
+    private volatile float forceMagnitude = 0.1f;
 
     public float getAngleFactor() {
         return angleFactor;
