@@ -1,51 +1,34 @@
 package com.cpz.generative.systems.lab.generative.flowfield;
 
-import processing.core.PApplet;
-
 /**
  * @author CPZ
  */
 public final class FlowField {
 
-    private final PApplet sketch;
-    private float angleFactor;
-    private float forceMagnitude;
+    private final NoiseSource3D noiseSource;
+    private final FlowFieldConfig config;
 
-    public FlowField(PApplet sketch) {
-        this.sketch = sketch;
-        // default values
-        this.angleFactor = 4.0f;
-        this.forceMagnitude = 0.1f;
-    }
-
-    public FlowField(PApplet sketch, float angleFactor, float forceMagnitude) {
-        this.sketch = sketch;
-        this.angleFactor = angleFactor;
-        this.forceMagnitude = forceMagnitude;
+    public FlowField(NoiseSource3D noiseSource, FlowFieldConfig config) {
+        if (noiseSource == null) throw new IllegalArgumentException("noiseSource must not be null");
+        if (config == null) throw new IllegalArgumentException("config must not be null");
+        this.noiseSource = noiseSource;
+        this.config = config;
     }
 
     public float getForceX(float x, float y, float noiseScale, float time) {
         float angle = getAngle(x, y, noiseScale, time);
-        return (float) Math.cos(angle) * forceMagnitude;
+        return (float) Math.cos(angle) * config.getForceMagnitude();
     }
 
     public float getForceY(float x, float y, float noiseScale, float time) {
         float angle = getAngle(x, y, noiseScale, time);
-        return (float) Math.sin(angle) * forceMagnitude;
+        return (float) Math.sin(angle) * config.getForceMagnitude();
     }
 
     private float getAngle(float x, float y, float noiseScale, float time) {
-        return sketch.noise(x * noiseScale, y * noiseScale, time)
-                * PApplet.TWO_PI
-                * angleFactor;
-    }
-
-    public void setAngleFactor(float angleFactor) {
-        this.angleFactor = angleFactor;
-    }
-
-    public void setForceMagnitude(float forceMagnitude) {
-        this.forceMagnitude = forceMagnitude;
+        return noiseSource.noise(x * noiseScale, y * noiseScale, time)
+                * (float) (Math.PI * 2.0)
+                * config.getAngleFactor();
     }
 
 }

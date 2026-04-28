@@ -40,16 +40,16 @@ public class ConfigFlowFieldSketch {
         // window size
         sk.size((int) (screenWidth * screenScaleFactor), (int) (screenHeight * screenScaleFactor), P2D);
         // antialiasing
-        sk.smooth(Integer.parseInt(FLOW_FIELD_SKETCH_PROPS.getProperty("smoothing")));
+        sk.smooth(Integer.parseInt(FLOW_FIELD_SKETCH_PROPS.getProperty("sketch.smoothing")));
         LOG.info("Finished settings");
     }
 
-    public static void setup(PApplet sk) {
+    public static void initialSetup(PApplet sketch) {
         LOG.info("Starting initial setup");
         // frames per second
-        sk.frameRate(Integer.parseInt(FLOW_FIELD_SKETCH_PROPS.getProperty("fps")));
+        sketch.frameRate(Integer.parseInt(FLOW_FIELD_SKETCH_PROPS.getProperty("sketch.fps")));
         // window title
-        sk.getSurface().setTitle(FLOW_FIELD_SKETCH_PROPS.getProperty("window.title"));
+        sketch.getSurface().setTitle(FLOW_FIELD_SKETCH_PROPS.getProperty("window.title"));
         LOG.info("Finished initial setup");
     }
 

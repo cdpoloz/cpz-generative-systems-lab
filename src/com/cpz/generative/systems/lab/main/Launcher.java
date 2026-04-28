@@ -1,13 +1,10 @@
 package com.cpz.generative.systems.lab.main;
 
 import com.cpz.generative.systems.lab.examples.flowfield.FlowFieldSketch;
+import com.cpz.generative.systems.lab.generative.flowfield.controls.FlowFieldSketchControls;
 import com.cpz.generative.systems.lab.logging.Log;
-import com.cpz.generative.systems.lab.logging.LogMessage;
 import processing.core.PApplet;
 
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.IOException;
 import java.util.Locale;
 import java.util.Properties;
 
@@ -41,7 +38,8 @@ public class Launcher {
             for (var handler : LOG.getHandlers()) handler.close();
         }));
         // you can run one of the available examples
-        PApplet.main(FlowFieldSketch.class);
+        //PApplet.main(FlowFieldSketch.class);
+        PApplet.main(FlowFieldSketchControls.class);
     }
 
 }

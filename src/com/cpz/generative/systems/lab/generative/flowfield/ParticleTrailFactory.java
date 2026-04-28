@@ -27,7 +27,7 @@ public class ParticleTrailFactory {
         int red2 = Colors.red(config.getColor2());
         int green2 = Colors.green(config.getColor2());
         int blue2 = Colors.blue(config.getColor2());
-        float strokeWeightMax = config.getStrokeWeightMax();
+        float strokeWeightMax = config.getStrokeWeight();
         ParticleTrail pt = new ParticleTrail();
         ParticleTrailElement leadingElement = ParticleTrailElementFactory.createParticleTrailElement(
                 x,

@@ -19,7 +19,7 @@ public class ParticleTrail {
         particleTrailElements.add(element);
     }
 
-    public void updateWithLeaderForce(float width, float height, float ax, float ay) {
+    public void updateWithLeaderForce(float width, float height, float ax, float ay, boolean updateStyle) {
         // updating the leading particle trail element position
         ParticleTrailElement leadingElement = particleTrailElements.getFirst();
         leadingElement.particle().updatePositionByAcceleration(width, height, ax, ay);
@@ -33,7 +33,7 @@ public class ParticleTrail {
         // updating the flag to skip drawing the particle trail element
         for (ParticleTrailElement trailElement : particleTrailElements) trailElement.particle().updateSkipDraw();
         // updating the particles trail elements' style
-        for (ParticleTrailElement element : particleTrailElements) element.style().updateCurrentColor(element.particle().getX() / width);
+        if (updateStyle) for (ParticleTrailElement element : particleTrailElements) element.style().updateCurrentColor(element.particle().getX() / width);
     }
 
     public List<ParticleTrailElement> getParticleTrailElements() {

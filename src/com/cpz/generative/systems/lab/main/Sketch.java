@@ -34,7 +34,7 @@ public class Sketch extends PApplet {
     }
 
     public void setup() {
-        ConfigFlowFieldSketch.setup(this);
+        ConfigFlowFieldSketch.initialSetup(this);
         LOG.info("Starting final setup");
         // button
         float x = 300f;

@@ -6,7 +6,7 @@ package com.cpz.generative.systems.lab.generative.flowfield;
 public class FlowFieldTrailConfig {
 
     private int particlesAmount = 10;
-
+    private int trailsAmount = 100;
     private float noiseScale = 0.001f;
     private float time = 0.0f;
     private float timeStep = 0.02f;
@@ -16,7 +16,15 @@ public class FlowFieldTrailConfig {
     private int color2;
 
     private float alphaMax = 255f;
-    private float strokeWeightMax = 0.5f;
+    private float strokeWeight = 0.5f;
+
+    public int getTrailsAmount() {
+        return trailsAmount;
+    }
+
+    public void setTrailsAmount(int trailsAmount) {
+        this.trailsAmount = trailsAmount;
+    }
 
     public int getParticlesAmount() {
         return particlesAmount;
@@ -82,11 +90,11 @@ public class FlowFieldTrailConfig {
         this.alphaMax = Math.clamp(alphaMax, 0.0f, 255.0f);
     }
 
-    public float getStrokeWeightMax() {
-        return strokeWeightMax;
+    public float getStrokeWeight() {
+        return strokeWeight;
     }
 
-    public void setStrokeWeightMax(float strokeWeightMax) {
-        this.strokeWeightMax = Math.max(0.0f, strokeWeightMax);
+    public void setStrokeWeight(float strokeWeight) {
+        this.strokeWeight = Math.max(0.0f, strokeWeight);
     }
 }
