@@ -78,9 +78,7 @@ public class FlowFieldSketchControls extends BaseSketch {
         lblAngleFactor = Util.getControl(controls, "lblAngleFactor", Label.class);
         // input manager
         inputManager = new InputManager();
-
-        inputManager.registerLayer(new SliderInputLayer(0, sldForceMagnitude));
-        inputManager.registerLayer(new SliderInputLayer(0, sldAngleFactor));
+        inputManager.registerLayer(new SliderInputLayer(0, sldForceMagnitude, sldAngleFactor));
         // binding
         sldForceMagnitude.setChangeListener(value -> {
             viewModel.setForceMagnitude(new BigDecimal(sldForceMagnitude.getFormattedValue()));
