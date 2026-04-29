@@ -28,10 +28,10 @@ public class FlowFieldSketch extends BaseSketch {
     private final FlowFieldConfig flowFieldConfig;
     private FlowField flowField;
 
-    public FlowFieldSketch(FlowFieldConfig flowFieldConfig) {
+    public FlowFieldSketch(FlowFieldConfig flowFieldConfig, FlowFieldTrailConfig flowFieldTrailConfig) {
         LOG.info("Starting sketch constructor: " + this.getClass().getSimpleName());
         this.flowFieldConfig = flowFieldConfig;
-        flowFieldTrailConfig = new FlowFieldTrailConfig();
+        this.flowFieldTrailConfig = flowFieldTrailConfig;
         particleTrails = new ArrayList<>();
         LOG.info("Finishing sketch constructor: " + this.getClass().getSimpleName());
     }
@@ -64,6 +64,11 @@ public class FlowFieldSketch extends BaseSketch {
     @Override
     public void draw() {
         background(0);
+        // updating particles' parameters from controls
+        if (flowFieldTrailConfig.consumeStyleUpdateRequested()) updateTrailStyles(flowFieldTrailConfig);
+        if (flowFieldTrailConfig.consumeNoiseScaleUpdateRequested()) updateNoiseScale(flowFieldTrailConfig);
+        if (flowFieldTrailConfig.consumeTimeStepUpdateRequested()) updateTimeStep(flowFieldTrailConfig);
+        if (flowFieldTrailConfig.consumeMaxSpeedUpdateRequested()) updateMaxSpeed(flowFieldTrailConfig);
         // updating particle trails
         particleTrails.parallelStream().forEach(pt -> updateTrail(flowField, pt));
         // rendering particle trails
@@ -80,6 +85,46 @@ public class FlowFieldSketch extends BaseSketch {
             float y = random(height);
             ParticleTrail pt = ParticleTrailFactory.createParticleTrail(x, y, flowFieldTrailConfig);
             particleTrails.add(pt);
+        }
+    }
+
+    private void updateTrailStyles(FlowFieldTrailConfig config) {
+        for (ParticleTrail trail : particleTrails) {
+            List<ParticleTrailElement> elements = trail.getParticleTrailElements();
+            int size = elements.size();
+            for (int i = 0; i < size; i++) {
+                float t = size == 1 ? 0f : i / (float) (size - 1);
+                float alpha = config.getAlphaMax() * (1f - t);
+                ParticleTrailElement element = elements.get(i);
+                int color1 = config.getColor1();
+                int color2 = config.getColor2();
+                element.style().setColors(
+                        Colors.argb((int) alpha, Colors.red(color1), Colors.green(color1), Colors.blue(color1)),
+                        Colors.argb((int) alpha, Colors.red(color2), Colors.green(color2), Colors.blue(color2))
+                );
+                element.style().updateCurrentColor(element.particle().getX() / width);
+            }
+        }
+    }
+
+    private void updateNoiseScale(FlowFieldTrailConfig config) {
+        float newNoiseScale = config.getNoiseScale();
+        for (ParticleTrail trail : particleTrails) {
+            for (ParticleTrailElement element : trail.getParticleTrailElements()) element.particle().setNoiseScale(newNoiseScale);
+        }
+    }
+
+    private void updateTimeStep(FlowFieldTrailConfig config) {
+        float newTimeStep = config.getTimeStep();
+        for (ParticleTrail trail : particleTrails) {
+            for (ParticleTrailElement element : trail.getParticleTrailElements()) element.particle().setTimeStep(newTimeStep);
+        }
+    }
+
+    private void updateMaxSpeed(FlowFieldTrailConfig config) {
+        float newMaxSpeed = config.getMaxSpeed();
+        for (ParticleTrail trail : particleTrails) {
+            for (ParticleTrailElement element : trail.getParticleTrailElements()) element.particle().setMaxSpeed(newMaxSpeed);
         }
     }
 

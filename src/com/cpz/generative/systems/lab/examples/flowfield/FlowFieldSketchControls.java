@@ -1,5 +1,6 @@
 package com.cpz.generative.systems.lab.examples.flowfield;
 
+import com.cpz.generative.systems.lab.generative.flowfield.FlowFieldTrailConfig;
 import com.cpz.generative.systems.lab.main.BaseSketch;
 import com.cpz.generative.systems.lab.generative.flowfield.FlowFieldConfig;
 import com.cpz.generative.systems.lab.logging.LogMessage;
@@ -10,7 +11,6 @@ import com.cpz.processing.controls.controls.slider.Slider;
 import com.cpz.processing.controls.controls.slider.input.SliderInputLayer;
 import com.cpz.processing.controls.core.input.InputManager;
 import com.cpz.processing.controls.core.input.PointerEvent;
-import com.cpz.processing.controls.util.Util;
 import processing.event.MouseEvent;
 import processing.opengl.PJOGL;
 
@@ -20,6 +20,7 @@ import java.io.IOException;
 import java.math.BigDecimal;
 import java.util.Map;
 import java.util.Properties;
+import java.util.function.Consumer;
 
 import static com.cpz.generative.systems.lab.main.Launcher.LOG;
 
@@ -35,12 +36,11 @@ public class FlowFieldSketchControls extends BaseSketch {
             + "flow-field" + File.separator
             + "flow-field-controls.json";
     private InputManager inputManager;
-    private Slider sldForceMagnitude, sldAngleFactor;
-    private Label lblForceMagnitude, lblAngleFactor;
+    private Map<String, Control> controls;
     private final FlowFieldControlsViewModel viewModel;
 
-    public FlowFieldSketchControls(FlowFieldConfig flowFieldConfig) {
-        this.viewModel = new FlowFieldControlsViewModel(flowFieldConfig);
+    public FlowFieldSketchControls(FlowFieldConfig flowFieldConfig, FlowFieldTrailConfig flowFieldTrailConfig) {
+        this.viewModel = new FlowFieldControlsViewModel(flowFieldConfig, flowFieldTrailConfig);
     }
 
     public void settings() {
@@ -63,45 +63,64 @@ public class FlowFieldSketchControls extends BaseSketch {
     }
 
     public void setup() {
-        // frames per second
+        // window configuration
         frameRate(Integer.parseInt(FLOW_FIELD_SKETCH_CONTROLS_PROPS.getProperty("sketch.fps")));
-        // window title
         getSurface().setTitle(FLOW_FIELD_SKETCH_CONTROLS_PROPS.getProperty("window.title"));
-        // position
         getSurface().setLocation(1920 - width - 10, 1080 - height - 75);
         // loading controls from JSON file
         ControlConfigLoader loader = new ControlConfigLoader(this);
-        Map<String, Control> controls = loader.load(CONFIG_PATH);
-        sldForceMagnitude = Util.getControl(controls, "sldForceMagnitude", Slider.class);
-        sldAngleFactor = Util.getControl(controls, "sldAngleFactor", Slider.class);
-        lblForceMagnitude = Util.getControl(controls, "lblForceMagnitude", Label.class);
-        lblAngleFactor = Util.getControl(controls, "lblAngleFactor", Label.class);
+        controls = loader.load(CONFIG_PATH);
         // input manager
         inputManager = new InputManager();
-        inputManager.registerLayer(new SliderInputLayer(0, sldForceMagnitude, sldAngleFactor));
-        // binding
-        sldForceMagnitude.setChangeListener(value -> {
-            viewModel.setForceMagnitude(new BigDecimal(sldForceMagnitude.getFormattedValue()));
-            lblForceMagnitude.setText(viewModel.getForceMagnitudeLabelText());
-        });
-        sldAngleFactor.setChangeListener(value -> {
-            viewModel.setAngleFactor(new BigDecimal(sldAngleFactor.getFormattedValue()));
-            lblAngleFactor.setText(viewModel.getAngleFactorLabelText());
-        });
-        // initial value
-        viewModel.setForceMagnitude(new BigDecimal(sldForceMagnitude.getFormattedValue()));
-        viewModel.setAngleFactor(new BigDecimal(sldAngleFactor.getFormattedValue()));
-        lblForceMagnitude.setText(viewModel.getForceMagnitudeLabelText());
-        lblAngleFactor.setText(viewModel.getAngleFactorLabelText());
+        inputManager.registerLayer(new SliderInputLayer(0,
+                slider("sldForceMagnitude"),
+                slider("sldAngleFactor"),
+                slider("sldAlphaMax"),
+                slider("sldNoiseScale"),
+                slider("sldTimeStep"),
+                slider("sldMaxSpeed")
+        ));
+        // binding & initial value
+        viewModel.setListener(this::updateLabels);
+        bindSlider(slider("sldForceMagnitude"), viewModel::setForceMagnitude);
+        bindSlider(slider("sldAngleFactor"), viewModel::setAngleFactor);
+        bindSlider(slider("sldAlphaMax"), viewModel::setAlphaMax);
+        bindSlider(slider("sldNoiseScale"), viewModel::setNoiseScale);
+        bindSlider(slider("sldTimeStep"), viewModel::setTimeStep);
+        bindSlider(slider("sldMaxSpeed"), viewModel::setMaxSpeed);
+        updateLabels();
     }
-
 
     public void draw() {
         background(128);
-        sldForceMagnitude.draw();
-        sldAngleFactor.draw();
-        lblForceMagnitude.draw();
-        lblAngleFactor.draw();
+        controls.values().forEach(Control::draw);
+    }
+
+    private Slider slider(String code) {
+        Control c = controls.get(code);
+        if (!(c instanceof Slider sld)) throw new IllegalStateException("Slider not found or invalid: " + code);
+        return sld;
+    }
+
+    private Label label(String code) {
+        Control c = controls.get(code);
+        if (!(c instanceof Label lbl)) throw new IllegalStateException("Label not found or invalid: " + code);
+        return lbl;
+    }
+
+    private void bindSlider(Slider slider, Consumer<BigDecimal> setter) {
+        Runnable apply = () -> setter.accept(new BigDecimal(slider.getFormattedValue()));
+        slider.setChangeListener(value -> apply.run());
+        apply.run();
+    }
+
+    private void updateLabels() {
+        label("lblForceMagnitude").setText(viewModel.getForceMagnitudeLabelText());
+        label("lblAngleFactor").setText(viewModel.getAngleFactorLabelText());
+        label("lblAlphaMax").setText(viewModel.getAlphaMaxLabelText());
+        label("lblNoiseScale").setText(viewModel.getNoiseScaleLabelText());
+        label("lblTimeStep").setText(viewModel.getTimeStepLabelText());
+        label("lblMaxSpeed").setText(viewModel.getMaxSpeedLabelText());
     }
 
     @Override

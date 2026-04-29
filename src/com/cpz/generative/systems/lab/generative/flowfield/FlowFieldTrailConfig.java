@@ -18,12 +18,57 @@ public class FlowFieldTrailConfig {
     private float alphaMax = 255f;
     private float strokeWeight = 0.5f;
 
+    private volatile boolean styleUpdateRequested;
+    private volatile boolean noiseScaleUpdateRequested;
+    private volatile boolean timeStepUpdateRequested;
+    private volatile boolean maxSpeedUpdateRequested;
+
+    public void requestStyleUpdate() {
+        styleUpdateRequested = true;
+    }
+
+    public boolean consumeStyleUpdateRequested() {
+        boolean requested = styleUpdateRequested;
+        styleUpdateRequested = false;
+        return requested;
+    }
+
+    public void requestNoiseScaleUpdate() {
+        noiseScaleUpdateRequested = true;
+    }
+
+    public boolean consumeNoiseScaleUpdateRequested() {
+        boolean requested = noiseScaleUpdateRequested;
+        noiseScaleUpdateRequested = false;
+        return requested;
+    }
+
+    public void requestTimeStepUpdate() {
+        timeStepUpdateRequested = true;
+    }
+
+    public boolean consumeTimeStepUpdateRequested() {
+        boolean requested = timeStepUpdateRequested;
+        timeStepUpdateRequested = false;
+        return requested;
+    }
+
+    public void requestMaxSpeedUpdate() {
+        maxSpeedUpdateRequested = true;
+    }
+
+    public boolean consumeMaxSpeedUpdateRequested() {
+        boolean requested = maxSpeedUpdateRequested;
+        maxSpeedUpdateRequested = false;
+        return requested;
+    }
+
     public int getTrailsAmount() {
         return trailsAmount;
     }
 
     public void setTrailsAmount(int trailsAmount) {
-        this.trailsAmount = trailsAmount;
+        this.trailsAmount = Math.max(1, trailsAmount);
     }
 
     public int getParticlesAmount() {
@@ -63,7 +108,7 @@ public class FlowFieldTrailConfig {
     }
 
     public void setMaxSpeed(float maxSpeed) {
-        this.maxSpeed = maxSpeed;
+        this.maxSpeed = Math.max(0.0f, maxSpeed);
     }
 
     public int getColor1() {
