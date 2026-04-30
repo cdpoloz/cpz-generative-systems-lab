@@ -16,7 +16,9 @@ The focus is not purely aesthetic. These sketches are designed to explore concep
 - Interaction modeling  
 - Real-time visualization of complex structures  
 
-Each sketch is a small, self-contained experiment that investigates a specific idea or system behavior.
+The project follows a modular structure where simulation logic is decoupled from rendering and interaction.
+
+Each example explores a specific system or behavior, typically composed of one or more sketches and supporting components.
 
 ## Purpose
 
@@ -34,17 +36,46 @@ This project complements my work in software architecture and simulation systems
 ## Structure
 
 ```text
-/sketches
-  /particles-system
-  /network-dynamics
-  /noise-field
-```
+src/com/cpz/generative/systems/lab/
+  examples/
+    flowfield/
+      FlowFieldLauncher.java
+      FlowFieldSketch.java
+      FlowFieldSketchControls.java
+      controls/
+        FlowFieldControlsViewModel.java
+        ViewModelListener.java
 
-Each folder contains an independent sketch focused on a specific concept or experiment.
+  generative/
+    flowfield/
+      FlowField.java
+      FlowFieldConfig.java
+      FlowFieldTrailConfig.java
+      Particle.java
+      ParticleTrail.java
+      ParticleTrailElement.java
+      ParticleStyle.java
+      ParticleTrailFactory.java
+      ParticleTrailElementFactory.java
+      NoiseSource3D.java
+
+docs/
+  flow-field.md
+```
+---
+
+## Current examples
+
+- FlowField (see `docs/flow-field.md`)
+
+---
 
 ## Notes
 
-These experiments are intentionally minimal and focused. The goal is to understand system behavior and structure, not to build production-ready applications.
+- Each example is launched through a dedicated Launcher class.
+- Visual logic (sketches) is separated from simulation/domain logic.
+- Controls are implemented in a separate sketch using a ViewModel-based approach.
+- Shared configuration objects allow real-time interaction between sketches.
 
 ---
 
