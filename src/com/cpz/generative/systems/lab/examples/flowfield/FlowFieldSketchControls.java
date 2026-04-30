@@ -1,8 +1,9 @@
 package com.cpz.generative.systems.lab.examples.flowfield;
 
+import com.cpz.generative.systems.lab.examples.flowfield.controls.FlowFieldControlsViewModel;
+import com.cpz.generative.systems.lab.generative.flowfield.FlowFieldConfig;
 import com.cpz.generative.systems.lab.generative.flowfield.FlowFieldTrailConfig;
 import com.cpz.generative.systems.lab.main.BaseSketch;
-import com.cpz.generative.systems.lab.generative.flowfield.FlowFieldConfig;
 import com.cpz.generative.systems.lab.logging.LogMessage;
 import com.cpz.processing.controls.controls.Control;
 import com.cpz.processing.controls.controls.config.ControlConfigLoader;
@@ -44,7 +45,6 @@ public class FlowFieldSketchControls extends BaseSketch {
     }
 
     public void settings() {
-        // properties
         String propertiesPath = "data" + File.separator
                 + "config" + File.separator
                 + "flow-field" + File.separator
@@ -63,14 +63,13 @@ public class FlowFieldSketchControls extends BaseSketch {
     }
 
     public void setup() {
-        // window configuration
         frameRate(Integer.parseInt(FLOW_FIELD_SKETCH_CONTROLS_PROPS.getProperty("sketch.fps")));
         getSurface().setTitle(FLOW_FIELD_SKETCH_CONTROLS_PROPS.getProperty("window.title"));
         getSurface().setLocation(1920 - width - 10, 1080 - height - 75);
-        // loading controls from JSON file
+
         ControlConfigLoader loader = new ControlConfigLoader(this);
         controls = loader.load(CONFIG_PATH);
-        // input manager
+
         inputManager = new InputManager();
         inputManager.registerLayer(new SliderInputLayer(0,
                 slider("sldForceMagnitude"),
@@ -80,7 +79,7 @@ public class FlowFieldSketchControls extends BaseSketch {
                 slider("sldTimeStep"),
                 slider("sldMaxSpeed")
         ));
-        // binding & initial value
+
         viewModel.setListener(this::updateLabels);
         bindSlider(slider("sldForceMagnitude"), viewModel::setForceMagnitude);
         bindSlider(slider("sldAngleFactor"), viewModel::setAngleFactor);

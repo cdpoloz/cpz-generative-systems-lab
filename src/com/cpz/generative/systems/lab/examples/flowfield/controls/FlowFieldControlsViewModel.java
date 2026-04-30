@@ -1,8 +1,7 @@
-package com.cpz.generative.systems.lab.examples.flowfield;
+package com.cpz.generative.systems.lab.examples.flowfield.controls;
 
 import com.cpz.generative.systems.lab.generative.flowfield.FlowFieldConfig;
 import com.cpz.generative.systems.lab.generative.flowfield.FlowFieldTrailConfig;
-import com.cpz.generative.systems.lab.generative.ViewModelListener;
 
 import java.math.BigDecimal;
 

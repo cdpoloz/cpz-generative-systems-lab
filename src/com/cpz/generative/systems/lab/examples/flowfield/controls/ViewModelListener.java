@@ -1,4 +1,4 @@
-package com.cpz.generative.systems.lab.generative;
+package com.cpz.generative.systems.lab.examples.flowfield.controls;
 
 /**
  * @author CPZ

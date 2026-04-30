@@ -21,7 +21,6 @@ public class ConfigFlowFieldSketch {
 
     public static void settings(PApplet sketch) {
         LOG.info("Starting settings");
-        // properties
         String propertiesPath = "data" + File.separator
                 + "config" + File.separator
                 + "flow-field" + File.separator
@@ -32,28 +31,23 @@ public class ConfigFlowFieldSketch {
             LOG.severe(LogMessage.fileLoadError(propertiesPath));
             System.exit(1);
         }
-        // window icon
+
         PJOGL.setIcon("data" + File.separator + "img" + File.separator + FLOW_FIELD_SKETCH_PROPS.getProperty("window.icon"));
-        // screen size
+
         DisplayInfo screen = DisplayDetector.resolveTargetDisplay(true);
         int screenWidth = screen.width();
         int screenHeight = screen.height();
-        // screen scale
         float screenScaleFactor = Float.parseFloat(FLOW_FIELD_SKETCH_PROPS.getProperty("screen.scale.factor"));
-        // window size
+
         sketch.size((int) (screenWidth * screenScaleFactor), (int) (screenHeight * screenScaleFactor), P2D);
-        // antialiasing
         sketch.smooth(Integer.parseInt(FLOW_FIELD_SKETCH_PROPS.getProperty("sketch.smoothing")));
         LOG.info("Finished settings");
     }
 
     public static void initialSetup(PApplet sketch) {
         LOG.info("Starting initial setup");
-        // frames per second
         sketch.frameRate(Integer.parseInt(FLOW_FIELD_SKETCH_PROPS.getProperty("sketch.fps")));
-        // window title
         sketch.getSurface().setTitle(FLOW_FIELD_SKETCH_PROPS.getProperty("window.title"));
-        // position
         sketch.getSurface().setLocation(0, 0);
         LOG.info("Finished initial setup");
     }

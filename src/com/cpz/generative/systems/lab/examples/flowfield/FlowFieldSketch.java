@@ -43,10 +43,9 @@ public class FlowFieldSketch extends BaseSketch {
     public void setup() {
         ConfigFlowFieldSketch.initialSetup(this);
         LOG.info("Starting final setup");
-        // flow field
         flowFieldConfig.setAngleFactor(4.0f);
         flowField = new FlowField(this::noise, flowFieldConfig);
-        // particle trails
+
         flowFieldTrailConfig.setTrailsAmount(500);
         flowFieldTrailConfig.setParticlesAmount(100);
         flowFieldTrailConfig.setAlphaMax(255f);
@@ -64,14 +63,14 @@ public class FlowFieldSketch extends BaseSketch {
     @Override
     public void draw() {
         background(0);
-        // updating particles' parameters from controls
+
         if (flowFieldTrailConfig.consumeStyleUpdateRequested()) updateTrailStyles(flowFieldTrailConfig);
         if (flowFieldTrailConfig.consumeNoiseScaleUpdateRequested()) updateNoiseScale(flowFieldTrailConfig);
         if (flowFieldTrailConfig.consumeTimeStepUpdateRequested()) updateTimeStep(flowFieldTrailConfig);
         if (flowFieldTrailConfig.consumeMaxSpeedUpdateRequested()) updateMaxSpeed(flowFieldTrailConfig);
-        // updating particle trails
+
         particleTrails.parallelStream().forEach(pt -> updateTrail(flowField, pt));
-        // rendering particle trails
+
         pushStyle();
         strokeWeight(particleTrails.getFirst().getLeadingElement().style().getStrokeWeight());
         particleTrails.forEach(this::drawParticleTrail);
@@ -129,7 +128,6 @@ public class FlowFieldSketch extends BaseSketch {
     }
 
     private void updateTrail(FlowField flowField, ParticleTrail particleTrail) {
-        // updating the leading particle trail element position
         ParticleTrailElement leadingElement = particleTrail.getLeadingElement();
         float x = leadingElement.particle().getX();
         float y = leadingElement.particle().getY();
@@ -145,9 +143,8 @@ public class FlowFieldSketch extends BaseSketch {
     }
 
     private void drawElement(ParticleTrailElement element) {
-        // checking if the particle must be drawn or not
         if (element.particle().isSkipDraw()) return;
-        // drawing element on screen
+
         float previousX = element.particle().getPreviousX();
         float previousY = element.particle().getPreviousY();
         float x = element.particle().getX();

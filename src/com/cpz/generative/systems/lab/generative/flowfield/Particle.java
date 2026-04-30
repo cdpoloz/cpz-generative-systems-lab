@@ -19,10 +19,9 @@ public final class Particle {
     }
 
     public void updatePositionByAcceleration(float width, float height, float ax, float ay) {
-        // saving previous position
         previousX = x;
         previousY = y;
-        // updating velocity value
+
         velX += ax;
         velY += ay;
         float speed = (float) Math.sqrt(velX * velX + velY * velY);
@@ -30,25 +29,24 @@ public final class Particle {
             velX = (velX / speed) * maxSpeed;
             velY = (velY / speed) * maxSpeed;
         }
-        // updating position
+
         x += velX;
         y += velY;
         if (x < 0) x = width - 1;
         else if (x >= width) x = 0;
         if (y < 0) y = height - 1;
         else if (y >= height) y = 0;
-        // updating time/step
+
         time += timeStep;
     }
 
     public void followPosition(float targetX, float targetY) {
-        // saving previous position
         previousX = x;
         previousY = y;
-        // updating position
+
         x = targetX;
         y = targetY;
-        // updating time/step
+
         time += timeStep;
     }
 

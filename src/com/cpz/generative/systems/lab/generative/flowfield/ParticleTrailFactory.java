@@ -1,6 +1,5 @@
 package com.cpz.generative.systems.lab.generative.flowfield;
 
-
 import com.cpz.utils.color.Colors;
 
 /**
