@@ -1,7 +1,7 @@
 package com.cpz.generative.systems.lab.main;
 
-import com.cpz.generative.systems.lab.examples.flowfield.FlowFieldLauncher;
 import com.cpz.generative.systems.lab.logging.Log;
+import processing.core.PApplet;
 
 import java.util.Locale;
 import java.util.Properties;
@@ -9,7 +9,7 @@ import java.util.Properties;
 /**
  * Bootstrap entry point ({@code main} package) responsible for starting the application.
  * <p>
- * Loads configuration, prepares the main {@link Sketch}, and launches the Processing runtime.
+ * Loads configuration, prepares the main {@link SketchReferencia}, and launches the Processing runtime.
  * This class contains no MVVM logic.
  * </p>
  *
@@ -23,7 +23,7 @@ public class Launcher {
     /**
      * Application entry point.
      * <p>
-     * Loads properties, configures logging shutdown, creates the {@link Sketch}, initializes it,
+     * Loads properties, configures logging shutdown, creates the {@link SketchReferencia}, initializes it,
      * and runs Processing on a dedicated thread.
      * </p>
      *
@@ -36,7 +36,8 @@ public class Launcher {
             for (var handler : LOG.getHandlers()) handler.close();
         }));
         // you can run one of the available examples
-        FlowFieldLauncher.runSketches();
+        //FlowFieldLauncher.runSketches();
+        PApplet.runSketch(new String[]{"Test"}, new TemplateSketch());
     }
 
 }

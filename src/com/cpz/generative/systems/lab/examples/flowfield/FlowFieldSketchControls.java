@@ -1,9 +1,8 @@
 package com.cpz.generative.systems.lab.examples.flowfield;
 
 import com.cpz.generative.systems.lab.examples.flowfield.controls.FlowFieldControlsViewModel;
-import com.cpz.generative.systems.lab.generative.flowfield.FlowFieldConfig;
-import com.cpz.generative.systems.lab.generative.flowfield.FlowFieldTrailConfig;
-import com.cpz.generative.systems.lab.main.BaseSketch;
+import com.cpz.generative.systems.lab.examples.flowfield.flowfield.FlowFieldConfig;
+import com.cpz.generative.systems.lab.examples.flowfield.flowfield.FlowFieldTrailConfig;
 import com.cpz.generative.systems.lab.logging.LogMessage;
 import com.cpz.processing.controls.controls.Control;
 import com.cpz.processing.controls.controls.config.ControlConfigLoader;
@@ -12,6 +11,7 @@ import com.cpz.processing.controls.controls.slider.Slider;
 import com.cpz.processing.controls.controls.slider.input.SliderInputLayer;
 import com.cpz.processing.controls.core.input.InputManager;
 import com.cpz.processing.controls.core.input.PointerEvent;
+import processing.core.PApplet;
 import processing.event.MouseEvent;
 import processing.opengl.PJOGL;
 
@@ -28,14 +28,14 @@ import static com.cpz.generative.systems.lab.main.Launcher.LOG;
 /**
  * @author CPZ
  */
-public class FlowFieldSketchControls extends BaseSketch {
+public class FlowFieldSketchControls extends PApplet {
 
     public static final Properties FLOW_FIELD_SKETCH_CONTROLS_PROPS = new Properties();
     private static final String CONFIG_PATH
             = "data" + File.separator
             + "config" + File.separator
             + "flow-field" + File.separator
-            + "flow-field-controls.json";
+            + "template-sketch.json";
     private InputManager inputManager;
     private Map<String, Control> controls;
     private final FlowFieldControlsViewModel viewModel;
@@ -124,7 +124,10 @@ public class FlowFieldSketchControls extends BaseSketch {
 
     @Override
     public void keyPressed() {
-        disableEscapeKey();
+        if (key == ESC) {
+            key = 0;
+            return;
+        }
     }
 
     @Override

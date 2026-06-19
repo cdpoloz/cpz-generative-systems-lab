@@ -1,14 +1,14 @@
 package com.cpz.generative.systems.lab.examples.flowfield;
 
-import com.cpz.generative.systems.lab.config.ConfigFlowFieldSketch;
-import com.cpz.generative.systems.lab.main.BaseSketch;
-import com.cpz.generative.systems.lab.generative.flowfield.FlowField;
-import com.cpz.generative.systems.lab.generative.flowfield.FlowFieldConfig;
-import com.cpz.generative.systems.lab.generative.flowfield.FlowFieldTrailConfig;
-import com.cpz.generative.systems.lab.generative.flowfield.ParticleTrail;
-import com.cpz.generative.systems.lab.generative.flowfield.ParticleTrailElement;
-import com.cpz.generative.systems.lab.generative.flowfield.ParticleTrailFactory;
+import com.cpz.generative.systems.lab.examples.flowfield.config.ConfigFlowFieldSketch;
+import com.cpz.generative.systems.lab.examples.flowfield.flowfield.FlowField;
+import com.cpz.generative.systems.lab.examples.flowfield.flowfield.FlowFieldConfig;
+import com.cpz.generative.systems.lab.examples.flowfield.flowfield.FlowFieldTrailConfig;
+import com.cpz.generative.systems.lab.examples.flowfield.flowfield.ParticleTrail;
+import com.cpz.generative.systems.lab.examples.flowfield.flowfield.ParticleTrailElement;
+import com.cpz.generative.systems.lab.examples.flowfield.flowfield.ParticleTrailFactory;
 import com.cpz.utils.color.Colors;
+import processing.core.PApplet;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -19,7 +19,7 @@ import static com.cpz.generative.systems.lab.main.Launcher.LOG;
 /**
  * @author CPZ
  */
-public class FlowFieldSketch extends BaseSketch {
+public class FlowFieldSketch extends PApplet {
 
     public static final Properties FLOW_FIELD_SKETCH_PROPS = new Properties();
 
@@ -155,7 +155,10 @@ public class FlowFieldSketch extends BaseSketch {
 
     @Override
     public void keyPressed() {
-        disableEscapeKey();
+        if (key == ESC) {
+            key = 0;
+            return;
+        }
         if (key == 'r') initializeTrails(flowFieldTrailConfig);
     }
 

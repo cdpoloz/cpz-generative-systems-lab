@@ -1,4 +1,4 @@
-package com.cpz.generative.systems.lab.generative.flowfield;
+package com.cpz.generative.systems.lab.examples.flowfield.flowfield;
 
 @FunctionalInterface
 public interface NoiseSource3D {

@@ -1,4 +1,4 @@
-package com.cpz.generative.systems.lab.generative.flowfield;
+package com.cpz.generative.systems.lab.examples.flowfield.flowfield;
 
 import com.cpz.utils.color.Colors;
 

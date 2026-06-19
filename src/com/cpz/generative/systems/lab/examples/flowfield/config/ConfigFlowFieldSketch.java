@@ -1,4 +1,4 @@
-package com.cpz.generative.systems.lab.config;
+package com.cpz.generative.systems.lab.examples.flowfield.config;
 
 import com.cpz.generative.systems.lab.logging.LogMessage;
 import com.cpz.generative.systems.lab.window.DisplayDetector;
@@ -24,7 +24,7 @@ public class ConfigFlowFieldSketch {
         String propertiesPath = "data" + File.separator
                 + "config" + File.separator
                 + "flow-field" + File.separator
-                + "config_flow-field-sketch.properties";
+                + "template-sketch.properties";
         try (FileInputStream fis = new FileInputStream(propertiesPath)) {
             FLOW_FIELD_SKETCH_PROPS.load(fis);
         } catch (IOException e) {
